@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mini Timer</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="timer-shell" aria-label="Mini Timer">
+      <output id="time-display" class="time-display" aria-live="off">00:00</output>
+      <div class="controls" aria-label="计时器控制">
+        <button id="toggle-timer" class="icon-button" type="button" aria-label="开始计时" title="开始"></button>
+        <button id="reset-timer" class="icon-button" type="button" aria-label="重置计时" title="重置">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M4.8 9.5A8 8 0 1 1 5 15.3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.4" />
+            <path d="M4.8 4.8v4.7h4.7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" />
+          </svg>
+        </button>
+      </div>
+    </main>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
