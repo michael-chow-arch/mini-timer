@@ -46,6 +46,77 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         run: npm run dist:win -- --publish never
 
+      - name: Smoke test Windows portable app
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          $portableArtifacts = @(Get-ChildItem -Path release -Filter '*-portable.exe' -File)
+          if ($portableArtifacts.Count -ne 1) {
+            throw "Expected one portable executable, found $($portableArtifacts.Count)."
+          }
+
+          function Get-ProcessTreeIds {
+            param([int]$RootProcessId)
+
+            $processes = @(Get-CimInstance Win32_Process)
+            $processIds = @($RootProcessId)
+            $index = 0
+            while ($index -lt $processIds.Count) {
+              $parentProcessId = $processIds[$index]
+              $childProcessIds = @(
+                $processes |
+                  Where-Object { $_.ParentProcessId -eq $parentProcessId } |
+                  ForEach-Object { [int]$_.ProcessId }
+              )
+              foreach ($childProcessId in $childProcessIds) {
+                if ($processIds -notcontains $childProcessId) {
+                  $processIds += $childProcessId
+                }
+              }
+              $index += 1
+            }
+
+            return $processIds
+          }
+
+          $env:MINI_TIMER_USER_DATA_DIR = Join-Path $env:RUNNER_TEMP "mini-timer-portable-$env:GITHUB_RUN_ID"
+          $portableProcess = Start-Process -FilePath $portableArtifacts[0].FullName -PassThru
+          try {
+            $deadline = (Get-Date).AddSeconds(30)
+            $miniTimerProcess = $null
+            while ((Get-Date) -lt $deadline -and $null -eq $miniTimerProcess) {
+              $processTreeIds = @(Get-ProcessTreeIds -RootProcessId $portableProcess.Id)
+              foreach ($processId in $processTreeIds) {
+                try {
+                  $candidate = Get-Process -Id $processId -ErrorAction Stop
+                  if (
+                    $candidate.ProcessName -eq 'Mini Timer' -and
+                    $candidate.MainWindowHandle -ne 0 -and
+                    $candidate.MainWindowTitle -eq 'Mini Timer'
+                  ) {
+                    $miniTimerProcess = $candidate
+                    break
+                  }
+                } catch {
+                  # A process can exit while its launch tree is being inspected.
+                }
+              }
+              Start-Sleep -Milliseconds 500
+            }
+
+            if ($null -eq $miniTimerProcess) {
+              throw "Mini Timer.exe did not create a titled main window within 30 seconds."
+            }
+          } finally {
+            if (-not $portableProcess.HasExited) {
+              & taskkill /PID $portableProcess.Id /T /F | Out-Host
+              if ($LASTEXITCODE -ne 0) {
+                throw "Unable to stop the portable executable process tree."
+              }
+              $portableProcess.WaitForExit()
+            }
+          }
+
       - name: Upload macOS DMGs
         if: ${{ runner.os == 'macOS' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -60,8 +131,18 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: mini-timer-windows
+          name: mini-timer-windows-installer
           if-no-files-found: error
           path: |
-            release/*.exe
+            release/*-setup.exe
+            !release/*.blockmap
+
+      - name: Upload Windows portable app
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: mini-timer-windows-portable
+          if-no-files-found: error
+          path: |
+            release/*-portable.exe
             !release/*.blockmap

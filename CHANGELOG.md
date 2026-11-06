@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1 — 2026-11-06
+
+- Fixed intermittent missed start/pause clicks.
+- Enabled first-click controls for inactive macOS windows.
+- Added a Windows portable executable; no installation required.
+
+修复开始/暂停偶尔点击无响应，支持 macOS 窗口未激活时直接点击操作，新增 Windows 绿色免安装版。
+
 ## 1.0.0 — 2026-11-06
 
 - Draggable, always-on-top elapsed-time window for presentations.

@@ -59,6 +59,48 @@ test('runs as a compact always-on-top timer window', { timeout: 30_000 }, async 
     await window.locator('#toggle-timer').click();
     assert.equal(await window.locator('#toggle-timer').getAttribute('aria-label'), '开始计时');
 
+    const toggleButton = window.locator('#toggle-timer');
+    const toggleBounds = await toggleButton.boundingBox();
+    const originalSymbol = await toggleButton.locator('svg').elementHandle();
+    // A normal click may cross a timer refresh between mouse-down and mouse-up.
+    for (const delay of [50, 120, 180, 250]) {
+      const before = await toggleButton.getAttribute('aria-label');
+      await window.mouse.click(
+        toggleBounds.x + toggleBounds.width / 2,
+        toggleBounds.y + toggleBounds.height / 2,
+        { delay },
+      );
+      assert.notEqual(await toggleButton.getAttribute('aria-label'), before, `click with ${delay} ms between down/up`);
+    }
+
+    for (const [x, y] of [[2, 16], [30, 16], [16, 2], [16, 30]]) {
+      const before = await toggleButton.getAttribute('aria-label');
+      await toggleButton.click({ position: { x, y }, delay: 80 });
+      assert.notEqual(await toggleButton.getAttribute('aria-label'), before, `button hit area at ${x},${y}`);
+    }
+    assert.equal(await originalSymbol.evaluate((symbol) => symbol.isConnected), true, 'timer updates preserve input targets');
+    await originalSymbol.dispose();
+
+    const beforeCancelledClick = await toggleButton.getAttribute('aria-label');
+    await window.mouse.move(toggleBounds.x + 16, toggleBounds.y + 16);
+    await window.mouse.down();
+    await pause(250);
+    const resetBounds = await window.locator('#reset-timer').boundingBox();
+    await window.mouse.move(resetBounds.x + 16, resetBounds.y + 16);
+    await window.mouse.up();
+    assert.equal(await toggleButton.getAttribute('aria-label'), beforeCancelledClick, 'releasing outside does not toggle');
+
+    await window.locator('#reset-timer').click();
+    await toggleButton.click();
+    await window.waitForFunction(() => document.querySelector('#time-display').textContent !== '00:00');
+    await toggleButton.click();
+    const pausedTime = await window.locator('#time-display').textContent();
+    await pause(1100);
+    assert.equal(await window.locator('#time-display').textContent(), pausedTime);
+    await toggleButton.click();
+    await window.waitForFunction((previous) => document.querySelector('#time-display').textContent !== previous, pausedTime);
+    await toggleButton.click();
+
     await window.locator('#reset-timer').click();
     assert.equal(await window.locator('#time-display').textContent(), '00:00');
     await window.keyboard.press('Space');

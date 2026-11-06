@@ -25,8 +25,13 @@ win:
     - target: nsis
       arch:
         - x64
-  artifactName: ${productName}-${version}-win-${arch}-setup.${ext}
+    - target: portable
+      arch:
+        - x64
 nsis:
+  artifactName: ${productName}-${version}-win-${arch}-setup.${ext}
   oneClick: false
   allowToChangeInstallationDirectory: true
   perMachine: false
+portable:
+  artifactName: ${productName}-${version}-win-${arch}-portable.${ext}

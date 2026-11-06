@@ -69,6 +69,7 @@ export function createMainWindow({ app, onClose }) {
     transparent: true,
     resizable: true,
     alwaysOnTop: true,
+    acceptFirstMouse: true,
     backgroundColor: '#00000000',
     show: false,
     title: 'Mini Timer',

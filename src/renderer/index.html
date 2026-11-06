@@ -10,7 +10,13 @@
     <main class="timer-shell" aria-label="Mini Timer">
       <output id="time-display" class="time-display" aria-live="off">00:00</output>
       <div class="controls" aria-label="计时器控制">
-        <button id="toggle-timer" class="icon-button" type="button" aria-label="开始计时" title="开始"></button>
+        <button id="toggle-timer" class="icon-button" type="button" aria-label="开始计时" aria-pressed="false" title="开始">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4" />
+            <path class="play-symbol" d="m10 8 6 4-6 4Z" fill="currentColor" />
+            <path class="pause-symbol" d="M9 8h2.4v8H9zm3.6 0H15v8h-2.4z" fill="currentColor" />
+          </svg>
+        </button>
         <button id="reset-timer" class="icon-button" type="button" aria-label="重置计时" title="重置">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M4.8 9.5A8 8 0 1 1 5 15.3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.4" />

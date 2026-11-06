@@ -79,6 +79,12 @@ body {
   display: block;
   width: 18px;
   height: 18px;
+  pointer-events: none;
+}
+
+#toggle-timer[aria-pressed="false"] .pause-symbol,
+#toggle-timer[aria-pressed="true"] .play-symbol {
+  display: none;
 }
 
 .icon-button:hover {

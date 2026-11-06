@@ -29,7 +29,12 @@
 
 ### Windows 10 / 11（x64）
 
-从 [Releases](https://github.com/michael-chow-arch/mini-timer/releases) 下载以 `win-x64-setup.exe` 结尾的安装程序，按向导安装。启动后可通过系统托盘显示、隐藏或退出应用。当前安装程序未签名，Windows 可能显示 SmartScreen 提示。
+在 [Releases](https://github.com/michael-chow-arch/mini-timer/releases) 选择：
+
+- **绿色免安装版**：下载以 `win-x64-portable.exe` 结尾的文件，双击运行。
+- **安装版**：下载以 `win-x64-setup.exe` 结尾的文件，按向导安装。
+
+启动后可通过系统托盘显示、隐藏或退出应用。当前程序未签名，Windows 可能显示 SmartScreen 提示。
 
 ## 使用
 

@@ -29,7 +29,12 @@ Use the top menu bar to show, hide, or quit the app. It does not appear in the D
 
 ### Windows 10 / 11 (x64)
 
-Download the installer ending in `win-x64-setup.exe` from [Releases](https://github.com/michael-chow-arch/mini-timer/releases) and follow the setup wizard. After launch, use the system tray to show, hide, or quit the app. The installer is unsigned, so Windows may display a SmartScreen warning.
+Choose a download from [Releases](https://github.com/michael-chow-arch/mini-timer/releases):
+
+- **Portable**: download the file ending in `win-x64-portable.exe` and run it directly, without installing.
+- **Installer**: download the file ending in `win-x64-setup.exe` and follow the setup wizard.
+
+After launch, use the system tray to show, hide, or quit the app. The app is unsigned, so Windows may display a SmartScreen warning.
 
 ## Use
 
