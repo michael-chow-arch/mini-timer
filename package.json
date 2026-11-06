@@ -2,6 +2,15 @@
   "name": "mini-timer",
   "version": "1.0.0",
   "description": "An offline, always-on-top presentation timer for macOS and Windows.",
+  "author": "Mini Timer contributors",
+  "homepage": "https://github.com/michael-chow-arch/mini-timer#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/michael-chow-arch/mini-timer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/michael-chow-arch/mini-timer/issues"
+  },
   "main": "src/main/main.js",
   "type": "module",
   "license": "MIT",

@@ -1,55 +1,70 @@
 # Mini Timer
 
-一个用于演讲、会议汇报和培训演示的极简全局悬浮正向计时器。它离线运行，将计时器保持在普通应用窗口之上，并尽可能覆盖 PowerPoint、WPS、Keynote 和 PDF 阅读器的演示画面。
+<img src="assets/icon.png" width="80" alt="Mini Timer logo">
+
+[English](README.en.md) · [GitHub](https://github.com/michael-chow-arch/mini-timer) · [Releases](https://github.com/michael-chow-arch/mini-timer/releases)
+
+免费、纯净的 PPT 悬浮计时助手。无需扩展屏幕，用一个可拖动的小窗查看演讲用时，观众也能看到。
+
+## 预览
+
+![Mini Timer 悬浮窗预览](assets/preview.png)
+
+深色半透明悬浮条；仅显示时间、开始/暂停和重置两个图标。
 
 ## 功能
 
-- 深色半透明、无标题栏的 260 × 60 px 悬浮窗
-- 始终置顶，可通过空白区域拖动；按钮区域不会触发拖动
-- 精确的正向计时：以 `performance.now()` 的单调时钟为基准，不以 `setInterval` 累加时间
-- 开始 / 暂停、重置；`Space`、`R`、`Esc` 分别控制开始暂停、重置、隐藏（计时器窗口获得焦点时）
-- 记住窗口位置；多显示器变化后会自动将窗口移回可见区域
-- Windows 托盘图标和 macOS 菜单栏图标均提供显示 / 隐藏与退出菜单
-- `contextIsolation` 已开启，`nodeIntegration` 已关闭，无网络服务和遥测依赖
+- 默认 `260 × 60` px，可拖动、始终置顶，并记住上次窗口位置。
+- 正向计时，基于单调时钟计算；开始、暂停后续计，重置归零。
+- `MM:SS` 显示，超过一小时自动切换为 `HH:MM:SS`。
+- macOS 从菜单栏操作（应用默认不显示在 Dock）；Windows 从系统托盘操作。
+- 完全离线：无需注册、无需网络服务，不含广告或遥测。
+- 当前版本为正向计时，不含倒计时或超时提醒。
 
-## 运行与打包
+## 安装
 
-环境要求：Node.js 22 或更高版本。
+### macOS 13+
+
+在 [Releases](https://github.com/michael-chow-arch/mini-timer/releases) 下载与芯片匹配的 DMG：Apple Silicon 选择 `arm64`，Intel 选择 `x64`。打开 DMG 后将 `Mini Timer.app` 拖到「应用程序」文件夹，再从中启动。
+
+启动后，屏幕顶部菜单栏的单色小秒表是显示、隐藏或退出应用的入口。应用默认不会出现在 Dock 中。当前安装包未做开发者签名或 Apple 公证，macOS 可能提示无法验证开发者。
+
+### Windows 10 / 11（x64）
+
+Windows NSIS 安装包已提供构建配置，但尚未在实体 Windows 设备上完成验证或发布。验证后的安装程序将通过 [Releases](https://github.com/michael-chow-arch/mini-timer/releases) 提供；启动后可从通知区域的系统托盘图标显示、隐藏或退出。
+
+## 使用
+
+1. 启动后，计时器默认出现在主屏幕右上角；拖动空白区域可移动它。
+2. 点击圆形播放/暂停图标控制计时，点击回转箭头重置为 `00:00`。
+3. 只有悬浮窗获得焦点时，快捷键才生效：`Space` 开始/暂停，`R` 重置，`Esc` 隐藏窗口但不退出应用。
+4. 通过菜单栏或系统托盘可再次显示窗口，或彻底退出应用。
+
+## 演示模式兼容性
+
+已在 macOS 的 PowerPoint 全屏播放和翻页时验证悬浮显示；Windows 的实际放映场景尚未验证。独占全屏、安全桌面等特殊模式可能阻止窗口覆盖，正式演讲前请在实际设备上试放。
+
+## 开发
+
+需要 Node.js 22 或更高版本。克隆后运行：
 
 ```bash
 npm install
 npm run dev
-```
-
-常用校验与构建命令：
-
-```bash
 npm test
 npm run check
-npm run build             # 构建当前平台的未打包目录
-npm run dist              # 在 macOS 构建 x64 和 arm64 DMG
-npm run dist:win          # 在 Windows 构建 x64 NSIS 安装程序
 ```
 
-首次启动时计时器会出现于主屏幕右上角。窗口空白处可拖动；关闭浮窗请使用系统托盘/菜单栏图标中的“退出 Mini Timer”。
+在对应操作系统构建安装包：
 
-## 全屏演示说明
-
-Mini Timer 在 macOS 使用 `setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })` 和较高的窗口层级；Windows 使用 Electron 的 always-on-top 窗口层级。这覆盖 PowerPoint、WPS 等常见“幻灯片放映”窗口模式的最佳努力场景。
-
-操作系统的独占全屏、受保护内容、安全桌面（如 Windows UAC）或会议软件的特殊全屏模式可以拒绝其他应用绘制在其上方，因此无法承诺在这些场景中显示。请在正式演讲所用的设备和投影模式上先试放一次。
-
-## 项目结构
-
-```text
-src/
-├── main/       Electron 主进程：窗口、位置持久化、托盘和 IPC
-├── preload/    最小化、安全的 IPC 桥接
-└── renderer/   无框悬浮 UI 与计时逻辑
-tests/          基于 Node 的计时逻辑单元测试
-assets/         应用与托盘图标源文件
+```bash
+npm run dist:mac:arm64  # Apple Silicon macOS
+npm run dist:mac:x64    # Intel macOS
+npm run dist:win        # Windows x64（待实机验证）
 ```
 
-## 构建说明
+应用图标为蓝白秒表。修改 `assets/icon.svg` 或 `assets/tray-icon.svg` 后执行 `node scripts/generate-icons.mjs` 重新生成平台图标；该脚本需要 `rsvg-convert`，在 macOS 上还需要系统自带的 `iconutil`。
 
-`electron-builder` 配置在 `electron-builder.yml` 中。macOS 的 x64 与 arm64 DMG 可在 macOS 构建；Windows NSIS 安装程序应在 Windows 环境构建。发布版签名和公证需要各平台对应的开发者证书，未配置证书时构建出的包会是未签名包。
+## 许可证
+
+[MIT License](LICENSE)。欢迎 [反馈问题](https://github.com/michael-chow-arch/mini-timer/issues) 和 [参与贡献](CONTRIBUTING.md)。
