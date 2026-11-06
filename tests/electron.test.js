@@ -23,18 +23,28 @@ test('runs as a compact always-on-top timer window', { timeout: 30_000 }, async 
     const window = await electronApp.firstWindow();
     await window.waitForFunction(() => window.miniTimer !== undefined);
 
-    const nativeState = await electronApp.evaluate(({ BrowserWindow }) => {
+    const nativeState = await electronApp.evaluate(({ app, BrowserWindow, nativeImage }) => {
       const timerWindow = BrowserWindow.getAllWindows()[0];
+      const trayIconName = process.platform === 'win32' ? 'icon.ico' : 'tray-icon.png';
+      const trayIcon = nativeImage.createFromPath(`${app.getAppPath()}/assets/${trayIconName}`);
       return {
         alwaysOnTop: timerWindow.isAlwaysOnTop(),
         bounds: timerWindow.getBounds(),
+        trayIconEmpty: trayIcon.isEmpty(),
+        trayIconSize: trayIcon.getSize(),
+        trayIconScales: trayIcon.getScaleFactors(),
       };
     });
     assert.equal(nativeState.alwaysOnTop, true);
+    assert.equal(nativeState.trayIconEmpty, false);
     assert.deepEqual(
       { width: nativeState.bounds.width, height: nativeState.bounds.height },
       { width: 260, height: 60 },
     );
+    if (process.platform === 'darwin') {
+      assert.deepEqual(nativeState.trayIconSize, { width: 18, height: 18 });
+      assert.deepEqual(nativeState.trayIconScales, [1, 2]);
+    }
 
     assert.equal(await window.locator('#time-display').textContent(), '00:00');
     assert.equal(await window.locator('.icon-button').count(), 2);

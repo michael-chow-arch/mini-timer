@@ -1,5 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#17191d"/>
-  <circle cx="256" cy="276" r="150" fill="none" stroke="#ffffff" stroke-width="32"/>
-  <path d="M190 88h132M256 88v58M256 195v92l66 40" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Mini Timer</title>
+  <defs>
+    <linearGradient id="blue" x1="0" y1="0" x2="0.7" y2="1">
+      <stop stop-color="#41ADFF"/>
+      <stop offset="0.55" stop-color="#1682FF"/>
+      <stop offset="1" stop-color="#0861EB"/>
+    </linearGradient>
+  </defs>
+  <rect x="40" y="40" width="432" height="432" rx="96" fill="url(#blue)"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="256" cy="278" r="122"/>
+    <path d="M220 108h72M256 108v48M256 206v72l58 34"/>
+  </g>
 </svg>
