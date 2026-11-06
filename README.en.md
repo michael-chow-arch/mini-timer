@@ -31,7 +31,7 @@ Use the monochrome stopwatch in the top menu bar to show, hide, or quit the app.
 
 ### Windows 10 / 11 (x64)
 
-The Windows NSIS installer is configured, but it has not yet been verified on physical Windows hardware or published. A verified installer will be available from [Releases](https://github.com/michael-chow-arch/mini-timer/releases); after launch, use the notification-area tray icon to show, hide, or quit it.
+Download the installer ending in `win-x64-setup.exe` from [Releases](https://github.com/michael-chow-arch/mini-timer/releases) and follow the setup wizard. After launch, use the notification-area tray icon to show, hide, or quit the app. The installer is unsigned, so Windows may display a SmartScreen warning.
 
 ## Use
 
@@ -42,7 +42,7 @@ The Windows NSIS installer is configured, but it has not yet been verified on ph
 
 ## Presentation-mode compatibility
 
-Overlay visibility has been tested during full-screen PowerPoint playback and slide changes on macOS. Real-world presentation testing on Windows is still pending. Exclusive full-screen modes and secure desktops may prevent overlays; rehearse on your actual equipment before a presentation.
+Automated tests and installer builds pass on both macOS and Windows. Overlay visibility has been tested during full-screen PowerPoint playback and slide changes on macOS. Real-world presentation testing on Windows is still pending. Exclusive full-screen modes and secure desktops may prevent overlays; rehearse on your actual equipment before a presentation.
 
 ## Development
 

@@ -31,7 +31,7 @@
 
 ### Windows 10 / 11（x64）
 
-Windows NSIS 安装包已提供构建配置，但尚未在实体 Windows 设备上完成验证或发布。验证后的安装程序将通过 [Releases](https://github.com/michael-chow-arch/mini-timer/releases) 提供；启动后可从通知区域的系统托盘图标显示、隐藏或退出。
+从 [Releases](https://github.com/michael-chow-arch/mini-timer/releases) 下载以 `win-x64-setup.exe` 结尾的安装程序，按向导安装。启动后可从通知区域的系统托盘图标显示、隐藏或退出。当前安装程序未签名，Windows 可能显示 SmartScreen 提示。
 
 ## 使用
 
@@ -42,7 +42,7 @@ Windows NSIS 安装包已提供构建配置，但尚未在实体 Windows 设备�
 
 ## 演示模式兼容性
 
-已在 macOS 的 PowerPoint 全屏播放和翻页时验证悬浮显示；Windows 的实际放映场景尚未验证。独占全屏、安全桌面等特殊模式可能阻止窗口覆盖，正式演讲前请在实际设备上试放。
+macOS 和 Windows 均通过自动化测试与安装包构建。已在 macOS 的 PowerPoint 全屏播放和翻页时验证悬浮显示；Windows 的实际放映场景尚未验证。独占全屏、安全桌面等特殊模式可能阻止窗口覆盖，正式演讲前请在实际设备上试放。
 
 ## 开发
 
