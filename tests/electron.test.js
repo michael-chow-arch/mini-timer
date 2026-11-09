@@ -118,3 +118,104 @@ test('runs as a compact always-on-top timer window', { timeout: 30_000 }, async 
     await rm(userDataPath, { force: true, recursive: true });
   }
 });
+
+test('configures and runs a countdown with completion feedback', { timeout: 30_000 }, async () => {
+  const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'mini-timer-countdown-'));
+  const electronApp = await electron.launch({
+    executablePath: electronExecutable,
+    args: ['.'],
+    env: { ...process.env, MINI_TIMER_USER_DATA_DIR: userDataPath },
+  });
+  try {
+    const window = await electronApp.firstWindow();
+    const errors = [];
+    window.on('pageerror', (error) => errors.push(error.message));
+    const mode = window.locator('#timer-mode');
+    const edit = window.locator('#edit-duration');
+    const input = window.locator('#duration-input');
+    const toggle = window.locator('#toggle-timer');
+    const display = window.locator('#time-display');
+    const configure = async (duration) => {
+      await edit.click();
+      await input.fill(duration);
+      await window.locator('#duration-form button[type="submit"]').click();
+    };
+
+    await mode.click();
+    assert.equal(await display.textContent(), '05:00');
+    await configure('00:00');
+    assert.equal(await input.getAttribute('aria-invalid'), 'true');
+    assert.equal(await window.locator('#duration-form').isVisible(), true);
+    assert.match(await window.locator('#duration-error').textContent(), /00:01/);
+    await window.keyboard.press('Escape');
+    assert.equal(await window.locator('#duration-form').isVisible(), false);
+    assert.equal(await display.textContent(), '05:00');
+    assert.equal(await edit.evaluate((element) => element === document.activeElement), true);
+    assert.equal(await electronApp.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].isVisible()), true);
+
+    await configure('01:02:03');
+    assert.equal(await display.textContent(), '01:02:03');
+    assert.equal(await display.evaluate((element) => element.classList.contains('has-hours')), true);
+    // The existing minimum window size must still fit the hour display and controls.
+    await electronApp.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(200, 48));
+    await window.waitForFunction(() => innerWidth === 200);
+    const fits = await window.evaluate(() => {
+      const readout = document.querySelector('#time-display').getBoundingClientRect();
+      const controls = document.querySelector('.controls').getBoundingClientRect();
+      return readout.right <= controls.left && readout.bottom <= innerHeight && readout.left >= 0;
+    });
+    assert.equal(fits, true);
+    await edit.click();
+    await input.fill('00:03');
+    await window.keyboard.press('Enter');
+    assert.equal(await display.textContent(), '00:03');
+    await toggle.click();
+    assert.equal(await mode.isDisabled(), true);
+    assert.equal(await edit.isDisabled(), true);
+    await window.waitForFunction(() => document.querySelector('#time-display').textContent === '00:02');
+    await toggle.click();
+    const pausedTime = await display.textContent();
+    await pause(1_100);
+    assert.equal(await display.textContent(), pausedTime);
+    await edit.click();
+    await input.fill('r'); // Typing a shortcut in the editor must not reset the timer.
+    await window.locator('#cancel-duration').click();
+    assert.equal(await display.textContent(), pausedTime);
+    await toggle.click();
+    await window.waitForFunction(() => document.querySelector('#timer-status').textContent === '时间到');
+    assert.equal(await display.textContent(), '00:00');
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
+    assert.equal(await toggle.getAttribute('aria-label'), '重新开始倒计时');
+    assert.equal(await mode.isEnabled(), true);
+    assert.equal(await edit.isEnabled(), true);
+    await pause(300);
+    assert.equal(await display.textContent(), '00:00');
+
+    await toggle.click();
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
+    assert.equal(await window.locator('#timer-status').textContent(), '');
+    await window.keyboard.press('r');
+    assert.equal(await display.textContent(), '00:03');
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
+    await mode.click();
+    assert.equal(await display.textContent(), '00:00');
+    assert.equal(await edit.isVisible(), false);
+    await mode.click();
+    assert.equal(await display.textContent(), '00:03');
+
+    await configure('00:01');
+    await toggle.click();
+    await window.keyboard.press('Escape');
+    await pause(1_500);
+    await electronApp.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].show());
+    await window.waitForFunction(() => document.querySelector('#timer-status').textContent === '时间到');
+    assert.equal(await display.textContent(), '00:00');
+    await configure('00:05');
+    assert.equal(await display.textContent(), '00:05');
+    assert.equal(await window.locator('#timer-status').textContent(), '');
+    assert.deepEqual(errors, []);
+  } finally {
+    await electronApp.close();
+    await rm(userDataPath, { force: true, recursive: true });
+  }
+});

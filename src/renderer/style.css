@@ -27,9 +27,115 @@ body {
   align-items: center;
   width: 100vw;
   height: 100vh;
-  padding: 0 22px 0 26px;
+  padding: 0 16px;
   border-radius: 16px;
   background: rgba(23, 25, 29, 0.9);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.timer-view {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.timer-readout {
+  flex: 1;
+  min-width: 0;
+}
+
+.timer-caption {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.text-button {
+  border: 0;
+  border-radius: 4px;
+  padding: 2px 0;
+  color: #d9dde5;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+.text-button:hover:not(:disabled) {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.text-button:focus-visible,
+.duration-controls input:focus-visible {
+  outline: 2px solid #bacfff;
+  outline-offset: 2px;
+}
+
+.text-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.is-finished .time-display,
+#timer-status,
+#duration-error {
+  color: #ffbd7a;
+}
+
+.duration-form {
+  width: 100%;
+  font-size: 12px;
+  -webkit-app-region: no-drag;
+}
+
+.duration-form label,
+#duration-error {
+  display: block;
+  line-height: 16px;
+}
+
+.duration-form:has([aria-invalid="true"]) label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+
+#duration-error:empty {
+  display: none;
+}
+
+.duration-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.duration-controls input {
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  border: 1px solid #8b929e;
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: #fff;
+  background: #252930;
+  font: 16px Consolas, monospace;
+  user-select: text;
+}
+
+.duration-controls .text-button {
+  flex: 0 0 30px;
+  height: 28px;
 }
 
 .time-display {
@@ -37,7 +143,7 @@ body {
   flex: 1;
   color: #fff;
   font-family: "SF Mono", SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  font-size: clamp(24px, 12.3vw, 32px);
+  font-size: clamp(24px, 11vw, 28px);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.1px;
@@ -46,7 +152,7 @@ body {
 }
 
 .time-display.has-hours {
-  font-size: clamp(18px, 8.8vw, 23px);
+  font-size: clamp(17px, 8.1vw, 21px);
   letter-spacing: -0.5px;
 }
 
@@ -94,4 +200,13 @@ body {
 .icon-button:focus-visible {
   background: rgba(255, 255, 255, 0.16);
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.65);
+}
+
+@media (max-width: 230px) {
+  .timer-shell { padding: 0 10px; }
+  .controls { gap: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-button { transition: none; }
 }

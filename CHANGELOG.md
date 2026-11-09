@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Added countdown mode with editable duration, pause/resume, reset, and silent completion feedback.
+- Added duration validation, keyboard editing, and countdown unit/Electron integration coverage.
+- Repaired missing optional Windows signing dependencies in the lockfile for clean installs.
+
+新增倒计时模式、时长设置、暂停续计、重置和安静的到时提醒，补充自动化测试并修复干净安装所需的依赖锁文件。
+
 ## 1.0.1 — 2026-11-06
 
 - Fixed intermittent missed start/pause clicks.
