@@ -126,11 +126,10 @@ test("invalid durations leave the existing countdown intact", () => {
   assert.throws(() => new Countdown({ durationMs: 0 }), RangeError);
 });
 
-test("parses minute and hour durations including boundaries", () => {
-  for (const [text, expected] of [
-    ["00:01", 1_000], ["5:00", 300_000], [" 05:30 ", 330_000],
-    ["90:00", 5_400_000], ["1:00:00", 3_600_000], ["99:59:59", MAX_COUNTDOWN_MS],
-  ]) assert.equal(parseDuration(text), expected, text);
+test("rejects seconds and hours syntax instead of guessing a unit", () => {
+  for (const text of ["00:01", "5:00", " 05:30 ", "90:00", "1:00:00", "99:59:59", "2:30", "5分钟"]) {
+    assert.equal(parseDuration(text), null, text);
+  }
 });
 
 test("rejects zero, incomplete, nonnumeric and out-of-range input", () => {
@@ -148,7 +147,7 @@ test("remaining time rounds up and keeps the correct hour boundary", () => {
 });
 
 test("whole-number input means minutes", () => {
-  for (const [text, expected] of [["1", 60_000], ["5", 300_000], [" 15 ", 900_000], ["90", 5_400_000], ["5999", 359_940_000]]) {
+  for (const [text, expected] of [["1", 60_000], ["00005", 300_000], ["5", 300_000], [" 15 ", 900_000], ["90", 5_400_000], ["5999", 359_940_000]]) {
     assert.equal(parseDuration(text), expected, text);
   }
 });

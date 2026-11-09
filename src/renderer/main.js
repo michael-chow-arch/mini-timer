@@ -50,7 +50,7 @@ function initializeTimer() {
     timerPanel.setAttribute("aria-labelledby", isCountdown ? countdownButton.id : stopwatchButton.id);
     editButton.hidden = !isCountdown;
     editButton.disabled = running;
-    editButton.title = running ? "暂停后可设置时长" : "设置倒计时时长";
+    editButton.title = running ? "暂停后可设置时长（分钟）" : "设置倒计时时长（分钟）";
   };
 
   const toggle = () => {
@@ -72,7 +72,7 @@ function initializeTimer() {
   const validate = () => {
     const duration = parseDuration(input.value);
     input.setAttribute("aria-invalid", String(duration === null));
-    const message = duration === null ? "请输入有效时长，如 5 或 02:30" : "";
+    const message = duration === null ? "请输入整数分钟（1–5999）" : "";
     if (error.textContent !== message) error.textContent = message;
     return duration;
   };
@@ -107,9 +107,7 @@ function initializeTimer() {
     editing = true;
     timerView.hidden = true;
     form.hidden = false;
-    input.value = countdown.durationMs % 60_000 === 0
-      ? String(countdown.durationMs / 60_000)
-      : formatRemaining(countdown.durationMs);
+    input.value = String(countdown.durationMs / 60_000);
     input.setAttribute("aria-invalid", "false");
     error.textContent = "";
     input.focus();
