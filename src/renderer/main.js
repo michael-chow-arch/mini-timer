@@ -10,7 +10,9 @@ function initializeTimer() {
   const display = document.querySelector("#time-display");
   const toggleButton = document.querySelector("#toggle-timer");
   const resetButton = document.querySelector("#reset-timer");
-  const modeButton = document.querySelector("#timer-mode");
+  const stopwatchButton = document.querySelector("#stopwatch-mode");
+  const countdownButton = document.querySelector("#countdown-mode");
+  const timerPanel = document.querySelector("#timer-panel");
   const editButton = document.querySelector("#edit-duration");
   const status = document.querySelector("#timer-status");
   const form = document.querySelector("#duration-form");
@@ -40,11 +42,12 @@ function initializeTimer() {
     toggleButton.setAttribute("aria-label", running ? "暂停计时" : finished ? "重新开始倒计时" : "开始计时");
     toggleButton.title = running ? "暂停" : finished ? "重新开始" : "开始";
     resetButton.title = isCountdown ? "重置为设定时长" : "重置";
-    const modeLabel = isCountdown ? "倒计时" : "正计时";
-    if (modeButton.textContent !== modeLabel) modeButton.textContent = modeLabel;
-    modeButton.setAttribute("aria-label", isCountdown ? "切换为正计时" : "切换为倒计时");
-    modeButton.title = running ? "暂停后可切换模式" : "切换模式并重置计时";
-    modeButton.disabled = running;
+    for (const [button, selected] of [[stopwatchButton, !isCountdown], [countdownButton, isCountdown]]) {
+      button.setAttribute("aria-selected", String(selected));
+      button.tabIndex = selected ? 0 : -1;
+      button.title = selected ? "当前模式" : "切换模式并重置计时";
+    }
+    timerPanel.setAttribute("aria-labelledby", isCountdown ? countdownButton.id : stopwatchButton.id);
     editButton.hidden = !isCountdown;
     editButton.disabled = running;
     editButton.title = running ? "暂停后可设置时长" : "设置倒计时时长";
@@ -76,12 +79,26 @@ function initializeTimer() {
 
   toggleButton.addEventListener("click", toggle);
   resetButton.addEventListener("click", reset);
-  modeButton.addEventListener("click", () => {
+  const selectMode = (nextMode) => {
+    if (mode === nextMode) return;
     stopwatch.reset();
     countdown.reset();
-    mode = mode === "stopwatch" ? "countdown" : "stopwatch";
+    mode = nextMode;
     render();
-  });
+  };
+  stopwatchButton.addEventListener("click", () => selectMode("stopwatch"));
+  countdownButton.addEventListener("click", () => selectMode("countdown"));
+  for (const button of [stopwatchButton, countdownButton]) {
+    button.addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const nextMode = event.key === "Home" ? "stopwatch"
+        : event.key === "End" ? "countdown"
+          : mode === "stopwatch" ? "countdown" : "stopwatch";
+      selectMode(nextMode);
+      (nextMode === "stopwatch" ? stopwatchButton : countdownButton).focus();
+    });
+  }
   editButton.addEventListener("click", () => {
     editing = true;
     timerView.hidden = true;

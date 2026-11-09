@@ -14,7 +14,8 @@ A free, clean floating timer for PowerPoint presentations. Track your speaking t
 
 ## Features
 
-- A draggable, always-on-top window; default size is `260 × 60` px and its position is remembered.
+- A draggable, always-on-top window; default size is `260 × 72` px and its position is remembered.
+- Visible stopwatch/countdown tabs with a white background and bold text identifying the selected mode.
 - Forward elapsed-time tracking with start, pause/resume, and reset.
 - Countdown mode with a 5-minute default, editable duration in whole minutes, `MM:SS`, or `HH:MM:SS`, pause/resume, and reset to the configured duration.
 - `MM:SS` display that switches to `HH:MM:SS` after one hour.
@@ -43,9 +44,9 @@ After launch, use the system tray to show, hide, or quit the app. The app is uns
 
 1. The timer starts at the upper-right of the primary screen. Drag its empty area to reposition it.
 2. Select the start/pause button to control the timer; select reset to return to `00:00`.
-3. Click “正计时” above the digits to switch to “倒计时” (countdown), then “时长” to edit the duration: enter `5` for 5 minutes. Press `Enter` to save and `Space` to start, or `Esc` / “取消” to cancel. For seconds, use `02:30`; `01:30:00` also works. The range is 1 second to `99:59:59`.
-4. Pause before switching modes or editing the duration. Switching modes resets the timers; saving a duration leaves the countdown stopped. After completion, start runs it again and reset restores the configured duration. The duration is retained for the current app session and returns to the default after quitting.
-5. Shortcuts work only while the floating window is focused: `Space` start/pause, `R` reset, and `Esc` hide without quitting. When a mode/duration button has focus, `Space` activates that button. Timer shortcuts are inactive while editing the duration.
+3. Select the “倒计时” (countdown) tab, then the outlined “设置时长” (set duration) button: enter `5` for 5 minutes. Press `Enter` to save and `Space` to start, or `Esc` / “取消” to cancel. For seconds, use `02:30`; `01:30:00` also works. The range is 1 second to `99:59:59`.
+4. Select the other tab at any time to stop and reset the timers. Returning to stopwatch shows `00:00`; returning to countdown restores the configured duration. Press Start to begin again. Selecting the current tab leaves timing unchanged. Pause before editing the duration; saving leaves the countdown stopped. The duration is retained for the current app session and returns to the default after quitting.
+5. Shortcuts work only while the floating window is focused: `Space` start/pause, `R` reset, and `Esc` hide without quitting. With a mode tab focused, Left/Right switch tabs and Home/End select stopwatch/countdown. Space activates a focused mode/duration button. Timer shortcuts are inactive while editing the duration.
 6. Use the menu bar or system tray to show the window again, or quit. Hiding does not pause the timer; completion feedback is visible when the window is shown again.
 
 ## Presentation-mode compatibility

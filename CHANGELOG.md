@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Replaced the hidden mode toggle with visible stopwatch/countdown tabs and a persistent white selected state.
+- Made duration editing discoverable with an outlined “设置时长” button; increased the compact window height to 72 px.
+- Switching tabs now stops and resets both timers, including while running; added keyboard tab navigation and regression coverage.
+
 - Kept completion and validation feedback white to match the minimal timer appearance.
 - Simplified duration entry: type minutes directly, then Enter and Space to start; avoid premature validation errors.
 - Fixed Windows presentation overlay stacking and verified full-screen PowerPoint playback in a Windows 11 POC.
