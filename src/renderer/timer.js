@@ -108,23 +108,13 @@ export class Countdown {
   }
 }
 
-/** Accept whole minutes, MM:SS or HH:MM:SS; reject empty or zero durations. */
+/** Accept only whole minutes; reject mixed units, empty or zero durations. */
 export function parseDuration(value) {
   if (typeof value !== "string") return null;
   const text = value.trim();
-  if (/^\d{1,4}$/.test(text)) {
-    const durationMs = Number(text) * 60_000;
-    return durationMs > 0 && durationMs <= MAX_COUNTDOWN_MS ? durationMs : null;
-  }
-  if (!/^\d{1,2}:\d{2}(?::\d{2})?$/.test(text)) return null;
-  const parts = text.split(":").map(Number);
-  const hasHours = parts.length === 3;
-  const seconds = parts.pop();
-  const minutes = parts.pop();
-  const hours = parts.pop() ?? 0;
-  if (seconds > 59 || (hasHours && minutes > 59)) return null;
-  const durationMs = (hours * 3_600 + minutes * 60 + seconds) * 1_000;
-  return durationMs >= 1_000 && durationMs <= MAX_COUNTDOWN_MS ? durationMs : null;
+  if (!/^\d+$/.test(text)) return null;
+  const durationMs = Number(text) * 60_000;
+  return durationMs > 0 && durationMs <= MAX_COUNTDOWN_MS ? durationMs : null;
 }
 
 export function formatRemaining(milliseconds) {

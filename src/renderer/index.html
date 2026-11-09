@@ -18,7 +18,7 @@
             <output id="time-display" class="time-display" aria-live="off">00:00</output>
             <span id="timer-status" role="status" aria-live="polite"></span>
           </div>
-          <button id="edit-duration" class="duration-button" type="button" title="设置倒计时时长" hidden>
+          <button id="edit-duration" class="duration-button" type="button" title="设置倒计时时长（分钟）" hidden>
             <img src="../../assets/icons/pencil-simple.svg" alt="" aria-hidden="true" />
             <span>设置时长</span>
           </button>
@@ -33,10 +33,13 @@
           </div>
         </div>
         <form id="duration-form" class="duration-form" hidden novalidate>
-          <label for="duration-input">时长（分钟，或分:秒）</label>
+          <label for="duration-input">倒计时时长（分钟）</label>
           <span id="duration-error" role="alert"></span>
           <div class="duration-controls">
-            <input id="duration-input" type="text" value="5" maxlength="8" autocomplete="off" spellcheck="false" aria-describedby="duration-error" />
+            <div class="duration-value">
+              <input id="duration-input" type="text" inputmode="numeric" pattern="[0-9]*" value="5" placeholder="例如 5" autocomplete="off" spellcheck="false" aria-describedby="duration-error" />
+              <span class="duration-unit" aria-hidden="true">分钟</span>
+            </div>
             <button class="text-button save-button" type="submit">保存</button>
             <button id="cancel-duration" class="text-button" type="button">取消</button>
           </div>

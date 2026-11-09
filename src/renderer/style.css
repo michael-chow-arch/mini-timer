@@ -147,9 +147,11 @@ button:disabled { cursor: default; }
 #duration-error:empty { display: none; }
 .duration-form:has([aria-invalid="true"]) label { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
 .duration-controls { display: flex; align-items: center; gap: 8px; }
+.duration-value { position: relative; flex: 1; min-width: 0; }
+.duration-unit { position: absolute; right: 8px; top: 0; line-height: 28px; color: #eee; pointer-events: none; }
 .duration-controls input {
   width: 100%; min-width: 0; height: 28px;
-  border: 1px solid #8b929e; border-radius: 5px; padding: 2px 6px;
+  border: 1px solid #8b929e; border-radius: 5px; padding: 2px 40px 2px 6px;
   color: var(--white); background: #303131;
   font: 16px Consolas, monospace; user-select: text;
 }

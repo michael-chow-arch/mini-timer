@@ -12,13 +12,15 @@ A free, clean floating timer for PowerPoint presentations. Track your speaking t
 
 ![Mini Timer countdown preview](assets/countdown-preview.png)
 
+![Countdown duration editor with a fixed minutes unit](assets/duration-preview.png)
+
 ## Features
 
 - A draggable, always-on-top window; default size is `320 × 96` px and its position is remembered.
 - Attached stopwatch/countdown tabs with a white selected state; large digits, a pencil duration action and a white play button share one compact row.
 - Forward elapsed-time tracking with start, pause/resume, and reset.
-- Countdown mode with a 5-minute default, editable duration in whole minutes, `MM:SS`, or `HH:MM:SS`, pause/resume, and reset to the configured duration.
-- `MM:SS` display that switches to `HH:MM:SS` after one hour.
+- Countdown mode with a 5-minute default, editable duration in whole minutes only (1–5999), pause/resume, and reset to the configured duration.
+- `MM:SS` display that switches to `HH:MM:SS` at one hour.
 - Menu bar controls on macOS (the app is hidden from the Dock by default) and a system tray on Windows.
 - Fully offline: no account, network service, advertising, or telemetry.
 - Countdowns stop at zero and keep white digits and show a “时间到” (time's up) label, without sound or pop-ups.
@@ -43,8 +45,8 @@ After launch, use the system tray to show, hide, or quit the app. The app is uns
 ## Use
 
 1. The timer starts at the upper-right of the primary screen. Drag its empty area to reposition it.
-2. Select the start/pause button to control the timer; select reset to return to `00:00`.
-3. Select the “倒计时” (countdown) tab, then the “设置时长” (set duration) button with a pencil icon: enter `5` for 5 minutes. Press `Enter` to save and `Space` to start, or `Esc` / “取消” to cancel. For seconds, use `02:30`; `01:30:00` also works. The range is 1 second to `99:59:59`.
+2. Select the start/pause button to control the timer; reset returns stopwatch to `00:00` or countdown to the configured duration.
+3. Select the “倒计时” (countdown) tab, then the “设置时长” (set duration) button with a pencil icon: enter `5` for 5 minutes. Press `Enter` to save and `Space` to start, or `Esc` / “取消” to cancel. The unit is always minutes: only integers from 1 to 5999 are accepted, with no decimals or colon-separated time input. The running display still shows minutes and seconds, or hours/minutes/seconds from one hour.
 4. Select the other tab at any time to stop and reset the timers. Returning to stopwatch shows `00:00`; returning to countdown restores the configured duration. Press Start to begin again. Selecting the current tab leaves timing unchanged. Pause before editing the duration; saving leaves the countdown stopped. The duration is retained for the current app session and returns to the default after quitting.
 5. Shortcuts work only while the floating window is focused: `Space` start/pause, `R` reset, and `Esc` hide without quitting. With a mode tab focused, Left/Right switch tabs and Home/End select stopwatch/countdown. Space activates a focused mode/duration button. Timer shortcuts are inactive while editing the duration.
 6. Use the menu bar or system tray to show the window again, or quit. Hiding does not pause the timer; completion feedback is visible when the window is shown again.
@@ -71,6 +73,8 @@ npm run dist:mac:arm64  # Apple Silicon macOS
 npm run dist:mac:x64    # Intel macOS
 npm run dist:win        # Windows x64
 ```
+
+The locally built Windows portable version is `release/*-win-x64-portable.exe`: a standalone executable that can be run or forwarded without installation.
 
 ## License
 

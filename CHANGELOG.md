@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 — 2026-11-09
 
+- Duration settings now accept whole minutes only (1–5999), with a persistent “分钟” unit and unambiguous validation; removed colon-based time input.
 - Replaced the hidden mode toggle with attached stopwatch/countdown tabs and a persistent white selected state.
 - Matched the selected compact tab design with large white digits, a pencil “设置时长” action and a white play button; default window size is 320×96 px (minimum 300×96).
 - Switching tabs now stops and resets both timers, including while running, and discards unsaved duration edits; added keyboard tab navigation and regression coverage.
@@ -14,7 +15,7 @@
 - Added duration validation, keyboard editing, and countdown unit/Electron integration coverage.
 - Repaired missing optional Windows signing dependencies in the lockfile for clean installs.
 
-新增倒计时模式、时长设置、暂停续计、重置和安静的到时提醒，补充自动化测试并修复干净安装所需的依赖锁文件。
+新增倒计时与连体页签，时长设置仅接受整数分钟并固定显示单位；支持暂停续计、重置和白色到时提醒。补充自动化测试及 Windows 绿色免安装版。
 
 ## 1.0.1 — 2026-11-06
 
