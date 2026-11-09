@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Kept completion and validation feedback white to match the minimal timer appearance.
+- Simplified duration entry: type minutes directly, then Enter and Space to start; avoid premature validation errors.
+- Fixed Windows presentation overlay stacking and verified full-screen PowerPoint playback in a Windows 11 POC.
+
 - Added countdown mode with editable duration, pause/resume, reset, and silent completion feedback.
 - Added duration validation, keyboard editing, and countdown unit/Electron integration coverage.
 - Repaired missing optional Windows signing dependencies in the lockfile for clean installs.

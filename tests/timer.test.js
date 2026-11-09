@@ -134,7 +134,7 @@ test("parses minute and hour durations including boundaries", () => {
 });
 
 test("rejects zero, incomplete, nonnumeric and out-of-range input", () => {
-  for (const value of ["", " ", "0", "00:00", "00:00:00", "1:2", "1.5:00", "-1:00", "+1:00",
+  for (const value of ["", " ", "0", "00:00", "00:00:00", "1:2", "1.5:00", "-1:00", "+1:00", "1.5", "-5", "1e2", "6000", "10000",
     "00:60", "01:60:00", "100:00:00", "01:02:03:04", "1e2:00", "ab:cd", null, 60]) {
     assert.equal(parseDuration(value), null, String(value));
   }
@@ -145,4 +145,10 @@ test("remaining time rounds up and keeps the correct hour boundary", () => {
     [-1, "00:00"], [0, "00:00"], [1, "00:01"], [999, "00:01"], [1_000, "00:01"],
     [1_001, "00:02"], [3_599_001, "01:00:00"], [3_599_000, "59:59"], [MAX_COUNTDOWN_MS, "99:59:59"],
   ]) assert.equal(formatRemaining(milliseconds), expected);
+});
+
+test("whole-number input means minutes", () => {
+  for (const [text, expected] of [["1", 60_000], ["5", 300_000], [" 15 ", 900_000], ["90", 5_400_000], ["5999", 359_940_000]]) {
+    assert.equal(parseDuration(text), expected, text);
+  }
 });

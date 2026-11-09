@@ -79,6 +79,10 @@ body {
   outline-offset: 2px;
 }
 
+.duration-controls input:focus-visible {
+  outline-offset: 0;
+}
+
 .text-button:disabled {
   opacity: 0.5;
   cursor: default;
@@ -87,7 +91,7 @@ body {
 .is-finished .time-display,
 #timer-status,
 #duration-error {
-  color: #ffbd7a;
+  color: #fff;
 }
 
 .duration-form {

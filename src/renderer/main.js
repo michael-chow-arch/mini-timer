@@ -59,17 +59,18 @@ function initializeTimer() {
     activeTimer().reset();
     render();
   };
-  const closeEditor = () => {
+  const closeEditor = (focusTarget = editButton) => {
     editing = false;
     form.hidden = true;
     timerView.hidden = false;
     render();
-    editButton.focus();
+    focusTarget.focus();
   };
   const validate = () => {
     const duration = parseDuration(input.value);
     input.setAttribute("aria-invalid", String(duration === null));
-    error.textContent = duration === null ? "请输入 00:01–99:59:59" : "";
+    const message = duration === null ? "请输入有效时长，如 5 或 02:30" : "";
+    if (error.textContent !== message) error.textContent = message;
     return duration;
   };
 
@@ -85,13 +86,21 @@ function initializeTimer() {
     editing = true;
     timerView.hidden = true;
     form.hidden = false;
-    input.value = formatRemaining(countdown.durationMs);
+    input.value = countdown.durationMs % 60_000 === 0
+      ? String(countdown.durationMs / 60_000)
+      : formatRemaining(countdown.durationMs);
     input.setAttribute("aria-invalid", "false");
     error.textContent = "";
     input.focus();
     input.select();
   });
-  input.addEventListener("input", validate);
+  input.addEventListener("input", () => {
+    // Give users time to finish typing; revalidate immediately when correcting an error.
+    if (input.getAttribute("aria-invalid") === "true") validate();
+  });
+  input.addEventListener("blur", (event) => {
+    if (editing && event.relatedTarget !== cancelButton) validate();
+  });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const duration = validate();
@@ -100,9 +109,9 @@ function initializeTimer() {
       return;
     }
     countdown.setDuration(duration);
-    closeEditor();
+    closeEditor(toggleButton);
   });
-  cancelButton.addEventListener("click", closeEditor);
+  cancelButton.addEventListener("click", () => closeEditor());
 
   window.addEventListener("keydown", (event) => {
     if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
