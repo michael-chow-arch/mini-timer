@@ -8,40 +8,40 @@
   </head>
   <body>
     <main class="timer-shell" aria-label="Mini Timer">
-      <div id="timer-view" class="timer-view">
-        <div class="timer-readout">
-          <div class="timer-caption">
-            <button id="timer-mode" class="text-button" type="button" aria-label="切换为倒计时" title="切换模式并重置计时">正计时</button>
-            <button id="edit-duration" class="text-button" type="button" title="设置倒计时时长" hidden>时长</button>
+      <div class="mode-switch" role="tablist" aria-label="计时模式">
+        <button id="stopwatch-mode" class="mode-button" type="button" role="tab" aria-selected="true" aria-controls="timer-panel"><span>正计时</span></button>
+        <button id="countdown-mode" class="mode-button" type="button" role="tab" aria-selected="false" aria-controls="timer-panel" tabindex="-1"><span>倒计时</span></button>
+      </div>
+      <div id="timer-panel" class="timer-panel" role="tabpanel" aria-labelledby="stopwatch-mode">
+        <div id="timer-view" class="timer-view">
+          <div class="timer-readout">
+            <output id="time-display" class="time-display" aria-live="off">00:00</output>
             <span id="timer-status" role="status" aria-live="polite"></span>
           </div>
-          <output id="time-display" class="time-display" aria-live="off">00:00</output>
-        </div>
-        <div class="controls" aria-label="计时器控制">
-          <button id="toggle-timer" class="icon-button" type="button" aria-label="开始计时" aria-pressed="false" title="开始">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4" />
-              <path class="play-symbol" d="m10 8 6 4-6 4Z" fill="currentColor" />
-              <path class="pause-symbol" d="M9 8h2.4v8H9zm3.6 0H15v8h-2.4z" fill="currentColor" />
-            </svg>
+          <button id="edit-duration" class="duration-button" type="button" title="设置倒计时时长" hidden>
+            <img src="../../assets/icons/pencil-simple.svg" alt="" aria-hidden="true" />
+            <span>设置时长</span>
           </button>
-          <button id="reset-timer" class="icon-button" type="button" aria-label="重置计时" title="重置">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M4.8 9.5A8 8 0 1 1 5 15.3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.4" />
-              <path d="M4.8 4.8v4.7h4.7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" />
-            </svg>
-          </button>
+          <div class="controls" aria-label="计时器控制">
+            <button id="toggle-timer" class="icon-button play-button" type="button" aria-label="开始计时" aria-pressed="false" title="开始">
+              <img class="play-symbol" src="../../assets/icons/play-fill.svg" alt="" aria-hidden="true" />
+              <img class="pause-symbol" src="../../assets/icons/pause-fill.svg" alt="" aria-hidden="true" />
+            </button>
+            <button id="reset-timer" class="icon-button reset-button" type="button" aria-label="重置计时" title="重置">
+              <img src="../../assets/icons/arrow-counter-clockwise.svg" alt="" aria-hidden="true" />
+            </button>
+          </div>
         </div>
+        <form id="duration-form" class="duration-form" hidden novalidate>
+          <label for="duration-input">时长（分钟，或分:秒）</label>
+          <span id="duration-error" role="alert"></span>
+          <div class="duration-controls">
+            <input id="duration-input" type="text" value="5" maxlength="8" autocomplete="off" spellcheck="false" aria-describedby="duration-error" />
+            <button class="text-button save-button" type="submit">保存</button>
+            <button id="cancel-duration" class="text-button" type="button">取消</button>
+          </div>
+        </form>
       </div>
-      <form id="duration-form" class="duration-form" hidden novalidate>
-        <label for="duration-input">时长（分钟，或分:秒）</label>
-        <span id="duration-error" role="alert"></span>
-        <div class="duration-controls">
-          <input id="duration-input" type="text" value="5" maxlength="8" autocomplete="off" spellcheck="false" aria-describedby="duration-error" />
-          <button class="text-button" type="submit">确定</button>
-          <button id="cancel-duration" class="text-button" type="button">取消</button>
-        </div>
-      </form>
     </main>
     <script type="module" src="./main.js"></script>
   </body>

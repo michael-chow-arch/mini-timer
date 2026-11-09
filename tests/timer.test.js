@@ -50,7 +50,7 @@ test("clamps a partially visible saved window fully into the active display", ()
 
   assert.deepEqual(
     resolveWindowBounds({ x: 1_420, y: 880, width: 260, height: 60 }, [display], display),
-    { x: 1_180, y: 840, width: 260, height: 60 },
+    { x: 1_140, y: 804, width: 300, height: 96 },
   );
 });
 
@@ -59,7 +59,7 @@ test("uses a visible fallback position when a saved display no longer exists", (
 
   assert.deepEqual(
     resolveWindowBounds({ x: 3_000, y: 1_000, width: 260, height: 60 }, [primaryDisplay], primaryDisplay),
-    { x: 1_156, y: 24, width: 260, height: 60 },
+    { x: 1_096, y: 24, width: 320, height: 96 },
   );
 });
 

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Replaced the hidden mode toggle with attached stopwatch/countdown tabs and a persistent white selected state.
+- Matched the selected compact tab design with large white digits, a pencil “设置时长” action and a white play button; default window size is 320×96 px (minimum 300×96).
+- Switching tabs now stops and resets both timers, including while running, and discards unsaved duration edits; added keyboard tab navigation and regression coverage.
+
 - Kept completion and validation feedback white to match the minimal timer appearance.
 - Simplified duration entry: type minutes directly, then Enter and Space to start; avoid premature validation errors.
 - Fixed Windows presentation overlay stacking and verified full-screen PowerPoint playback in a Windows 11 POC.

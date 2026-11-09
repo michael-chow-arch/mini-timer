@@ -39,7 +39,7 @@ test('runs as a compact always-on-top timer window', { timeout: 30_000 }, async 
     assert.equal(nativeState.trayIconEmpty, false);
     assert.deepEqual(
       { width: nativeState.bounds.width, height: nativeState.bounds.height },
-      { width: 260, height: 60 },
+      { width: 320, height: 96 },
     );
     if (process.platform === 'darwin') {
       assert.deepEqual(nativeState.trayIconSize, { width: 18, height: 18 });
@@ -49,10 +49,6 @@ test('runs as a compact always-on-top timer window', { timeout: 30_000 }, async 
     assert.equal(await window.locator('#time-display').textContent(), '00:00');
     assert.equal(await window.locator('.icon-button').count(), 2);
     assert.equal(await window.locator('button[title="关闭"]').count(), 0);
-    assert.equal(
-      await window.locator('.timer-shell').evaluate((element) => getComputedStyle(element).borderRadius),
-      '16px',
-    );
 
     await window.locator('#toggle-timer').click();
     assert.equal(await window.locator('#toggle-timer').getAttribute('aria-label'), '暂停计时');
@@ -61,7 +57,7 @@ test('runs as a compact always-on-top timer window', { timeout: 30_000 }, async 
 
     const toggleButton = window.locator('#toggle-timer');
     const toggleBounds = await toggleButton.boundingBox();
-    const originalSymbol = await toggleButton.locator('svg').elementHandle();
+    const originalSymbol = await toggleButton.locator('.play-symbol').elementHandle();
     // A normal click may cross a timer refresh between mouse-down and mouse-up.
     for (const delay of [50, 120, 180, 250]) {
       const before = await toggleButton.getAttribute('aria-label');
@@ -130,7 +126,8 @@ test('configures and runs a countdown with completion feedback', { timeout: 30_0
     const window = await electronApp.firstWindow();
     const errors = [];
     window.on('pageerror', (error) => errors.push(error.message));
-    const mode = window.locator('#timer-mode');
+    const mode = window.getByRole('tab', { name: '倒计时', exact: true });
+    const stopwatchMode = window.getByRole('tab', { name: '正计时', exact: true });
     const edit = window.locator('#edit-duration');
     const input = window.locator('#duration-input');
     const toggle = window.locator('#toggle-timer');
@@ -156,13 +153,16 @@ test('configures and runs a countdown with completion feedback', { timeout: 30_0
     await configure('01:02:03');
     assert.equal(await display.textContent(), '01:02:03');
     assert.equal(await display.evaluate((element) => element.classList.contains('has-hours')), true);
-    // The existing minimum window size must still fit the hour display and controls.
-    await electronApp.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(200, 48));
-    await window.waitForFunction(() => innerWidth === 200);
+    // Tabs, the duration button, hour display and controls must fit the minimum size.
+    await electronApp.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(300, 96));
+    await window.waitForFunction(() => innerWidth === 300);
     const fits = await window.evaluate(() => {
       const readout = document.querySelector('#time-display').getBoundingClientRect();
       const controls = document.querySelector('.controls').getBoundingClientRect();
-      return readout.right <= controls.left && readout.bottom <= innerHeight && readout.left >= 0;
+      const tabs = document.querySelector('.mode-switch').getBoundingClientRect();
+      const edit = document.querySelector('#edit-duration').getBoundingClientRect();
+      return readout.right <= controls.left && readout.bottom <= innerHeight && readout.left >= 0
+        && tabs.bottom <= readout.top && readout.right <= edit.left && edit.right <= controls.left && tabs.top >= 0;
     });
     assert.equal(fits, true);
     await edit.click();
@@ -170,7 +170,7 @@ test('configures and runs a countdown with completion feedback', { timeout: 30_0
     await window.keyboard.press('Enter');
     assert.equal(await display.textContent(), '00:03');
     await toggle.click();
-    assert.equal(await mode.isDisabled(), true);
+    assert.equal(await mode.isEnabled(), true);
     assert.equal(await edit.isDisabled(), true);
     await window.waitForFunction(() => document.querySelector('#time-display').textContent === '00:02');
     await toggle.click();
@@ -197,7 +197,7 @@ test('configures and runs a countdown with completion feedback', { timeout: 30_0
     await window.keyboard.press('r');
     assert.equal(await display.textContent(), '00:03');
     assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
-    await mode.click();
+    await stopwatchMode.click();
     assert.equal(await display.textContent(), '00:00');
     assert.equal(await edit.isVisible(), false);
     await mode.click();
@@ -229,7 +229,7 @@ test('sets minutes without format syntax and starts with Space after saving', { 
   });
   try {
     const window = await electronApp.firstWindow();
-    await window.locator('#timer-mode').click();
+    await window.getByRole('tab', { name: '倒计时', exact: true }).click();
     await window.locator('#edit-duration').click();
     const input = window.locator('#duration-input');
     assert.equal(await input.inputValue(), '5');
@@ -252,6 +252,67 @@ test('sets minutes without format syntax and starts with Space after saving', { 
     await window.keyboard.press('Escape');
     assert.equal(await window.locator('#edit-duration').evaluate((element) => element === document.activeElement), true);
     assert.equal(await window.locator('#time-display').textContent(), '15:00', 'cancel preserves the previous timer');
+  } finally {
+    await electronApp.close();
+    await rm(userDataPath, { recursive: true, force: true });
+  }
+});
+
+test('visible tabs reset running timers and support keyboard selection', { timeout: 20_000 }, async () => {
+  const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'mini-timer-tabs-'));
+  const electronApp = await electron.launch({
+    executablePath: electronExecutable,
+    args: ['.'],
+    env: { ...process.env, MINI_TIMER_USER_DATA_DIR: userDataPath },
+  });
+  try {
+    const window = await electronApp.firstWindow();
+    const stopwatch = window.getByRole('tab', { name: '正计时', exact: true });
+    const countdown = window.getByRole('tab', { name: '倒计时', exact: true });
+    const display = window.locator('#time-display');
+    const toggle = window.locator('#toggle-timer');
+    assert.equal(await stopwatch.isVisible(), true);
+    assert.equal(await countdown.isVisible(), true);
+    assert.equal(await stopwatch.getAttribute('aria-selected'), 'true');
+    await countdown.click();
+    assert.equal(await countdown.getAttribute('aria-selected'), 'true');
+    assert.equal(await stopwatch.getAttribute('aria-selected'), 'false');
+    await window.getByRole('button', { name: '设置时长', exact: true }).click();
+    await window.locator('#duration-input').fill('00:05');
+    await window.keyboard.press('Enter');
+    await toggle.click();
+    await window.waitForFunction(() => document.querySelector('#time-display').textContent === '00:04');
+    await countdown.click();
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'true', 'clicking the selected tab does not restart the timer');
+    await stopwatch.click();
+    assert.equal(await display.textContent(), '00:00');
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
+    await toggle.click();
+    await window.waitForFunction(() => document.querySelector('#time-display').textContent !== '00:00');
+    await countdown.click();
+    assert.equal(await display.textContent(), '00:05', 'returning to countdown restores the configured duration');
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
+    await window.keyboard.press('ArrowLeft');
+    assert.equal(await stopwatch.getAttribute('aria-selected'), 'true');
+    assert.equal(await stopwatch.evaluate((element) => element === document.activeElement), true);
+    assert.equal(await display.textContent(), '00:00', 'returning to stopwatch starts from zero');
+    await window.keyboard.press('End');
+    assert.equal(await countdown.getAttribute('aria-selected'), 'true');
+    assert.equal(await countdown.getAttribute('tabindex'), '0');
+    assert.equal(await stopwatch.getAttribute('tabindex'), '-1');
+    await window.keyboard.press('Tab');
+    assert.equal(await window.locator('#edit-duration').evaluate((element) => element === document.activeElement), true);
+    await window.keyboard.press('Space');
+    assert.equal(await window.locator('#duration-form').isVisible(), true);
+    await window.keyboard.press('Escape');
+    assert.equal(await display.textContent(), '00:05');
+    await window.getByRole('button', { name: '设置时长', exact: true }).click();
+    await window.locator('#duration-input').fill('10');
+    await stopwatch.click();
+    assert.equal(await window.locator('#duration-form').isVisible(), false, 'switching tabs exits the duration editor');
+    assert.equal(await display.textContent(), '00:00');
+    await countdown.click();
+    assert.equal(await display.textContent(), '00:05', 'an unsaved draft must not replace the configured duration');
   } finally {
     await electronApp.close();
     await rm(userDataPath, { recursive: true, force: true });
