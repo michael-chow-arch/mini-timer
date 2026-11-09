@@ -10,14 +10,17 @@ A free, clean floating timer for PowerPoint presentations. Track your speaking t
 
 ![Mini Timer floating window preview](assets/preview.png)
 
+![Mini Timer countdown preview](assets/countdown-preview.png)
+
 ## Features
 
 - A draggable, always-on-top window; default size is `260 × 60` px and its position is remembered.
 - Forward elapsed-time tracking with start, pause/resume, and reset.
+- Countdown mode with a 5-minute default, editable `MM:SS` or `HH:MM:SS` duration, pause/resume, and reset to the configured duration.
 - `MM:SS` display that switches to `HH:MM:SS` after one hour.
 - Menu bar controls on macOS (the app is hidden from the Dock by default) and a system tray on Windows.
 - Fully offline: no account, network service, advertising, or telemetry.
-- Elapsed-time tracking only; no countdown or overtime alerts in this version.
+- Countdowns stop at zero and show highlighted digits and a “时间到” (time's up) label, without sound or pop-ups.
 
 ## Install
 
@@ -40,8 +43,10 @@ After launch, use the system tray to show, hide, or quit the app. The app is uns
 
 1. The timer starts at the upper-right of the primary screen. Drag its empty area to reposition it.
 2. Select the start/pause button to control the timer; select reset to return to `00:00`.
-3. Shortcuts work only while the floating window is focused: `Space` start/pause, `R` reset, and `Esc` hide the window without quitting.
-4. Use the menu bar or system tray to show the window again, or quit the app.
+3. Click “正计时” above the digits to switch to “倒计时” (countdown), then “设置” to edit the duration, such as `05:00`, `90:00`, or `01:30:00`. The range is 1 second to `99:59:59`; seconds and the minute field in three-part input cannot exceed 59. Press `Enter` to save, or `Esc` / “取消” to cancel.
+4. Pause before switching modes or editing the duration. Switching modes resets the timers; saving a duration leaves the countdown stopped. After completion, start runs it again and reset restores the configured duration. The duration is retained for the current app session and returns to the default after quitting.
+5. Shortcuts work only while the floating window is focused: `Space` start/pause, `R` reset, and `Esc` hide without quitting. When a mode/settings button has focus, `Space` activates that button. Timer shortcuts are inactive while editing the duration.
+6. Use the menu bar or system tray to show the window again, or quit. Hiding does not pause the timer; completion feedback is visible when the window is shown again.
 
 ## Presentation-mode compatibility
 

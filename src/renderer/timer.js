@@ -53,6 +53,79 @@ export class Stopwatch {
   }
 }
 
+export const MAX_COUNTDOWN_MS = (99 * 3_600 + 59 * 60 + 59) * 1_000;
+
+/** A countdown derived from the same monotonic clock as the stopwatch. */
+export class Countdown {
+  #durationMs;
+
+  #stopwatch;
+
+  constructor({ durationMs = 5 * 60_000, now } = {}) {
+    this.#stopwatch = new Stopwatch({ now });
+    this.setDuration(durationMs);
+  }
+
+  get durationMs() {
+    return this.#durationMs;
+  }
+
+  get remainingMs() {
+    return Math.max(0, this.#durationMs - this.#stopwatch.elapsedMs);
+  }
+
+  get isFinished() {
+    return this.remainingMs === 0;
+  }
+
+  get isRunning() {
+    return this.#stopwatch.isRunning && !this.isFinished;
+  }
+
+  setDuration(durationMs) {
+    if (!Number.isInteger(durationMs) || durationMs < 1_000 || durationMs > MAX_COUNTDOWN_MS) {
+      throw new RangeError("Countdown duration must be between 1 second and 99:59:59.");
+    }
+    this.#durationMs = durationMs;
+    this.reset();
+  }
+
+  start() {
+    if (!this.isFinished) this.#stopwatch.start();
+  }
+
+  pause() {
+    this.#stopwatch.pause();
+  }
+
+  toggle() {
+    if (this.isRunning) this.pause();
+    else this.start();
+  }
+
+  reset() {
+    this.#stopwatch.reset();
+  }
+}
+
+/** Accept MM:SS or HH:MM:SS; reject ambiguous, empty, or zero durations. */
+export function parseDuration(value) {
+  if (typeof value !== "string" || !/^\d{1,2}:\d{2}(?::\d{2})?$/.test(value.trim())) return null;
+  const parts = value.trim().split(":").map(Number);
+  const hasHours = parts.length === 3;
+  const seconds = parts.pop();
+  const minutes = parts.pop();
+  const hours = parts.pop() ?? 0;
+  if (seconds > 59 || (hasHours && minutes > 59)) return null;
+  const durationMs = (hours * 3_600 + minutes * 60 + seconds) * 1_000;
+  return durationMs >= 1_000 && durationMs <= MAX_COUNTDOWN_MS ? durationMs : null;
+}
+
+export function formatRemaining(milliseconds) {
+  // Keep 00:01 visible until the actual deadline, rather than showing zero early.
+  return formatElapsed(Math.ceil(Math.max(0, milliseconds) / 1_000) * 1_000);
+}
+
 const pad = (value) => String(value).padStart(2, "0");
 
 export function formatElapsed(milliseconds) {
