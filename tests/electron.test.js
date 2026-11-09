@@ -39,7 +39,7 @@ test('runs as a compact always-on-top timer window', { timeout: 30_000 }, async 
     assert.equal(nativeState.trayIconEmpty, false);
     assert.deepEqual(
       { width: nativeState.bounds.width, height: nativeState.bounds.height },
-      { width: 260, height: 72 },
+      { width: 320, height: 96 },
     );
     if (process.platform === 'darwin') {
       assert.deepEqual(nativeState.trayIconSize, { width: 18, height: 18 });
@@ -49,10 +49,6 @@ test('runs as a compact always-on-top timer window', { timeout: 30_000 }, async 
     assert.equal(await window.locator('#time-display').textContent(), '00:00');
     assert.equal(await window.locator('.icon-button').count(), 2);
     assert.equal(await window.locator('button[title="关闭"]').count(), 0);
-    assert.equal(
-      await window.locator('.timer-shell').evaluate((element) => getComputedStyle(element).borderRadius),
-      '16px',
-    );
 
     await window.locator('#toggle-timer').click();
     assert.equal(await window.locator('#toggle-timer').getAttribute('aria-label'), '暂停计时');
@@ -61,7 +57,7 @@ test('runs as a compact always-on-top timer window', { timeout: 30_000 }, async 
 
     const toggleButton = window.locator('#toggle-timer');
     const toggleBounds = await toggleButton.boundingBox();
-    const originalSymbol = await toggleButton.locator('svg').elementHandle();
+    const originalSymbol = await toggleButton.locator('.play-symbol').elementHandle();
     // A normal click may cross a timer refresh between mouse-down and mouse-up.
     for (const delay of [50, 120, 180, 250]) {
       const before = await toggleButton.getAttribute('aria-label');
@@ -158,15 +154,15 @@ test('configures and runs a countdown with completion feedback', { timeout: 30_0
     assert.equal(await display.textContent(), '01:02:03');
     assert.equal(await display.evaluate((element) => element.classList.contains('has-hours')), true);
     // Tabs, the duration button, hour display and controls must fit the minimum size.
-    await electronApp.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(220, 72));
-    await window.waitForFunction(() => innerWidth === 220);
+    await electronApp.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(300, 96));
+    await window.waitForFunction(() => innerWidth === 300);
     const fits = await window.evaluate(() => {
       const readout = document.querySelector('#time-display').getBoundingClientRect();
       const controls = document.querySelector('.controls').getBoundingClientRect();
       const tabs = document.querySelector('.mode-switch').getBoundingClientRect();
       const edit = document.querySelector('#edit-duration').getBoundingClientRect();
       return readout.right <= controls.left && readout.bottom <= innerHeight && readout.left >= 0
-        && tabs.right < edit.left && edit.right <= innerWidth && tabs.top >= 0;
+        && tabs.bottom <= readout.top && readout.right <= edit.left && edit.right <= controls.left && tabs.top >= 0;
     });
     assert.equal(fits, true);
     await edit.click();
@@ -310,6 +306,13 @@ test('visible tabs reset running timers and support keyboard selection', { timeo
     assert.equal(await window.locator('#duration-form').isVisible(), true);
     await window.keyboard.press('Escape');
     assert.equal(await display.textContent(), '00:05');
+    await window.getByRole('button', { name: '设置时长', exact: true }).click();
+    await window.locator('#duration-input').fill('10');
+    await stopwatch.click();
+    assert.equal(await window.locator('#duration-form').isVisible(), false, 'switching tabs exits the duration editor');
+    assert.equal(await display.textContent(), '00:00');
+    await countdown.click();
+    assert.equal(await display.textContent(), '00:05', 'an unsaved draft must not replace the configured duration');
   } finally {
     await electronApp.close();
     await rm(userDataPath, { recursive: true, force: true });

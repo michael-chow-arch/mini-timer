@@ -4,13 +4,13 @@ import path from 'node:path';
 const STATE_FILE_NAME = 'window-state.json';
 
 export const DEFAULT_WINDOW_BOUNDS = Object.freeze({
-  width: 260,
-  height: 72,
+  width: 320,
+  height: 96,
 });
 
 export const MINIMUM_WINDOW_SIZE = Object.freeze({
-  width: 220,
-  height: 72,
+  width: 300,
+  height: 96,
 });
 
 function isFiniteNumber(value) {

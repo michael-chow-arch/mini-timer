@@ -81,6 +81,9 @@ function initializeTimer() {
   resetButton.addEventListener("click", reset);
   const selectMode = (nextMode) => {
     if (mode === nextMode) return;
+    editing = false;
+    form.hidden = true;
+    timerView.hidden = false;
     stopwatch.reset();
     countdown.reset();
     mode = nextMode;
@@ -90,6 +93,7 @@ function initializeTimer() {
   countdownButton.addEventListener("click", () => selectMode("countdown"));
   for (const button of [stopwatchButton, countdownButton]) {
     button.addEventListener("keydown", (event) => {
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
       if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
       event.preventDefault();
       const nextMode = event.key === "Home" ? "stopwatch"
