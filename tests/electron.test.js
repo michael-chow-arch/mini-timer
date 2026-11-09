@@ -146,7 +146,7 @@ test('configures and runs a countdown with completion feedback', { timeout: 30_0
     await configure('00:00');
     assert.equal(await input.getAttribute('aria-invalid'), 'true');
     assert.equal(await window.locator('#duration-form').isVisible(), true);
-    assert.match(await window.locator('#duration-error').textContent(), /00:01/);
+    assert.match(await window.locator('#duration-error').textContent(), /02:30/);
     await window.keyboard.press('Escape');
     assert.equal(await window.locator('#duration-form').isVisible(), false);
     assert.equal(await display.textContent(), '05:00');
@@ -217,5 +217,43 @@ test('configures and runs a countdown with completion feedback', { timeout: 30_0
   } finally {
     await electronApp.close();
     await rm(userDataPath, { force: true, recursive: true });
+  }
+});
+
+test('sets minutes without format syntax and starts with Space after saving', { timeout: 15_000 }, async () => {
+  const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'mini-timer-simple-'));
+  const electronApp = await electron.launch({
+    executablePath: electronExecutable,
+    args: ['.'],
+    env: { ...process.env, MINI_TIMER_USER_DATA_DIR: userDataPath },
+  });
+  try {
+    const window = await electronApp.firstWindow();
+    await window.locator('#timer-mode').click();
+    await window.locator('#edit-duration').click();
+    const input = window.locator('#duration-input');
+    assert.equal(await input.inputValue(), '5');
+    await input.fill('');
+    assert.equal(await input.getAttribute('aria-invalid'), 'false', 'do not report an error before typing is finished');
+    await input.fill('15');
+    await window.keyboard.press('Enter');
+    assert.equal(await window.locator('#time-display').textContent(), '15:00');
+    assert.equal(await window.locator('#toggle-timer').evaluate((element) => element === document.activeElement), true);
+    await window.keyboard.press('Space');
+    assert.equal(await window.locator('#toggle-timer').getAttribute('aria-pressed'), 'true');
+    assert.equal(await window.locator('#duration-form').isVisible(), false);
+    await window.keyboard.press('Space');
+    await window.locator('#edit-duration').click();
+    await input.fill('0');
+    await window.keyboard.press('Tab');
+    assert.equal(await input.getAttribute('aria-invalid'), 'true', 'validate when leaving the field');
+    await input.fill('5');
+    assert.equal(await input.getAttribute('aria-invalid'), 'false', 'correcting an error clears it immediately');
+    await window.keyboard.press('Escape');
+    assert.equal(await window.locator('#edit-duration').evaluate((element) => element === document.activeElement), true);
+    assert.equal(await window.locator('#time-display').textContent(), '15:00', 'cancel preserves the previous timer');
+  } finally {
+    await electronApp.close();
+    await rm(userDataPath, { recursive: true, force: true });
   }
 });

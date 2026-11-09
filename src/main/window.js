@@ -81,8 +81,8 @@ export function createMainWindow({ app, onClose }) {
     },
   });
 
-  const alwaysOnTopLevel = process.platform === 'darwin' ? 'screen-saver' : 'floating';
-  mainWindow.setAlwaysOnTop(true, alwaysOnTopLevel);
+  // Keep the overlay above full-screen presentations on both desktop platforms.
+  mainWindow.setAlwaysOnTop(true, 'screen-saver');
   if (process.platform === 'darwin') {
     mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   }

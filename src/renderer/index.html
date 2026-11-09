@@ -12,7 +12,7 @@
         <div class="timer-readout">
           <div class="timer-caption">
             <button id="timer-mode" class="text-button" type="button" aria-label="切换为倒计时" title="切换模式并重置计时">正计时</button>
-            <button id="edit-duration" class="text-button" type="button" title="设置倒计时时长" hidden>设置</button>
+            <button id="edit-duration" class="text-button" type="button" title="设置倒计时时长" hidden>时长</button>
             <span id="timer-status" role="status" aria-live="polite"></span>
           </div>
           <output id="time-display" class="time-display" aria-live="off">00:00</output>
@@ -34,10 +34,10 @@
         </div>
       </div>
       <form id="duration-form" class="duration-form" hidden novalidate>
-        <label for="duration-input">时长（分:秒 / 时:分:秒）</label>
+        <label for="duration-input">时长（分钟，或分:秒）</label>
         <span id="duration-error" role="alert"></span>
         <div class="duration-controls">
-          <input id="duration-input" type="text" value="05:00" maxlength="8" autocomplete="off" spellcheck="false" aria-describedby="duration-error" />
+          <input id="duration-input" type="text" value="5" maxlength="8" autocomplete="off" spellcheck="false" aria-describedby="duration-error" />
           <button class="text-button" type="submit">确定</button>
           <button id="cancel-duration" class="text-button" type="button">取消</button>
         </div>
